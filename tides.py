@@ -39,20 +39,14 @@ def get_daylight_tides_from_html(html):
 
     tides = []
     for row in rows:
-        tide = dict()
+        tide = dict(sunrise = sunrise, sunset = sunset)
         tds = row.findAll('td')
         kind = tds[tideIndex].b.contents[0]
         tide['type'] = 'low' if kind == 'Low Tide' else 'high'
-        if tide['type'] != 'low':
-            continue
         time = tds[timeIndex].b.contents[0].strip()
         tide['time'] = datetime.datetime.strptime(date + ' ' + time, '%d %B %Y %I:%M%p')
-        if not sunrise < tide['time'] < sunset: # not daylight
-            continue
         height = tds[heightIndex].b.contents[0].strip()
-        tide['height'] = float(height.split()[0])
-        kind = tds[tideIndex].b.contents[0]
-        tide['type'] = 'low' if kind == 'Low Tide' else 'high'
+        tide['height'] = float(re.search('[0-9.]+', height).group())
         yield tide
 
 def get_tides_for_location(location):
@@ -67,8 +61,19 @@ def get_tides_for_all_locations():
         for result in get_tides_for_location(location):
             yield result
 
+def is_daylight(result):
+    return result['sunrise'] < result['time'] < result['sunset']
+
+def is_low_tide(result):
+    return result['type'] == 'low'
+
 
 if __name__ == '__main__':
     for result in get_tides_for_all_locations():
-        print("{}\t{:%I:%M%p}\t{} ft".format(location_to_full_name[result['location']], result['time'], result['height']))
+        if is_daylight(result) and is_low_tide(result):
+            print("{}\t{}\t{:%I:%M%p}\t{} ft".format(
+                    location_to_full_name[result['location']],
+                    result['type'],
+                    result['time'],
+                    result['height']))
 
