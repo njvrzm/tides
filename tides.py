@@ -69,9 +69,13 @@ def is_low_tide(result):
 
 
 if __name__ == '__main__':
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--no_filter', action='store_true')
+    args = ap.parse_args()
     for result in get_tides_for_all_locations():
-        if is_daylight(result) and is_low_tide(result):
-            print("{}\t{}\t{:%I:%M%p}\t{} ft".format(
+        if args.no_filter or (is_daylight(result) and is_low_tide(result)):
+            print("{:30s}\t{}\t{:%I:%M%p}\t{} ft".format(
                     location_to_full_name[result['location']],
                     result['type'],
                     result['time'],

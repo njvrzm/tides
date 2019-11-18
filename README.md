@@ -13,6 +13,11 @@ Scrapes https://www.tide-forecast.com/ for tide info for several fixed locations
 ```bash
 njv@nebulosa:~/Code/lowtide (master)$ python tides.py
 Half Moon Bay, CA       low     08:37AM 3.3 ft
+njv@nebulosa:~/Code/lowtide (master)$ python tides.py  --no_filter
+Half Moon Bay, CA               high    03:46AM 4.42 ft
+Half Moon Bay, CA               low     08:37AM 3.3 ft
+Half Moon Bay, CA               high    02:01PM 4.97 ft
+# etc.
 ```
 
 ## Usage
